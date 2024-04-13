@@ -6,9 +6,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+      
       - name: Build exe with Pyinstaller and upload
         uses: sayyid5416/pyinstaller@v1.2.0
         with:
           spec: 'build.spec'
           requirements: 'requirements.txt'
           python_ver: '3.12'
+          upload_exe_with_name: 'Debot'
