@@ -1,5 +1,5 @@
-from consolemenu import *
-from consolemenu.items import *
+from consolemenu import ConsoleMenu
+from consolemenu.items import FunctionItem
 import compiler
 import loader
 
@@ -20,5 +20,8 @@ if __name__ == "__main__":
 
     menu.append_item(item_compile)
     menu.append_item(item_load)
+
+    menu.screen.println("Розробив ст. Стафеєв Андрій")
+    menu.screen.println("https://github.com/Ansandr/debot")
 
     menu.show()
