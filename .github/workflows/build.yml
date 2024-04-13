@@ -10,12 +10,12 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.12
+          python-version: 3.6
       
       - name: Build exe with Pyinstaller and upload
         uses: sayyid5416/pyinstaller@v1.2.0
         with:
           spec: 'build.spec'
           requirements: 'requirements.txt'
-          python_ver: '3.12'
+          python_ver: '3.6'
           upload_exe_with_name: 'Debot'
