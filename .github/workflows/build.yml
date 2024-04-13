@@ -17,8 +17,6 @@ jobs:
         with:
           spec: 'build.spec'
           requirements: 'requirements.txt'
+          options: --onefile, --name "Debot", --windowed,
           python_ver: '3.12'
-          
-          
-          options: --onefile, --name "Debot", --windowed, 
           upload_exe_with_name: 'Debot'
