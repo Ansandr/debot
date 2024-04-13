@@ -1,0 +1,27 @@
+name: Build Python Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  pyinstaller-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Executable
+        uses: sayyid5416/pyinstaller@v1.2.0
+        with:
+          python_ver: '3.12'
+          spec: 'src/build.spec'
+          requirements: 'src/requirements.txt'
+          upload_exe_with_name: 'Debot'
+          options: --onefile, --name "Debot", --windowed, 
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload exe file to artifacts
+      uses: actions/upload-artifact@v4.3.1
+      with:
+        name: Debot
+        path: dist/*.exe 
