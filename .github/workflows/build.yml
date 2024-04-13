@@ -22,4 +22,5 @@ jobs:
           spec: 'build.spec'
           requirements: 'requirements.txt'
           python_ver: '3.6'
+          pyinstaller_ver: '==5.13.2'
           upload_exe_with_name: 'Debot'
