@@ -1,3 +1,2 @@
-pywin32
 win32gui
 consolemenu

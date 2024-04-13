@@ -10,12 +10,16 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.6
+          python-version: 3.12
+
+      - name: Install pywin
+        run: |
+          pip install pywin32
       
       - name: Build exe with Pyinstaller and upload
         uses: sayyid5416/pyinstaller@v1.2.0
         with:
           spec: 'build.spec'
           requirements: 'requirements.txt'
-          python_ver: '3.6'
+          python_ver: '3.12'
           upload_exe_with_name: 'Debot'
