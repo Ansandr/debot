@@ -17,7 +17,7 @@ jobs:
           pip install pywin32
       
       - name: Build exe with Pyinstaller and upload
-        uses: sayyid5416/pyinstaller@v1.2.0
+        uses: sayyid5416/pyinstaller@v1.6.0
         with:
           spec: 'build.spec'
           requirements: 'requirements.txt'
