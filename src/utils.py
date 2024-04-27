@@ -40,3 +40,16 @@ def writeFile(fileName, programLines):
 
 def dec_to_bin(x):
     return int(bin(x)[2:])
+
+def dec_to_bin_list():
+    n = int(input("Enter an integer: "))
+
+    create_file("list.txt")
+    lines = []
+    for dec in range(0, n):
+        num = str(dec_to_bin(dec))
+        zeros = '0'*(16 - len(num))
+        num = zeros + num
+        num = ' '.join([num[i:i+4] for i in range(0, len(num), 4)])
+        lines.append(num)
+    writeFile("list.txt", lines)
