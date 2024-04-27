@@ -1,5 +1,3 @@
-import os
-
 # Create empty file
 def create_file(fileName):
     print("Створення файлу " + fileName)

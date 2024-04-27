@@ -1,5 +1,10 @@
+from numpy import var
 import utils
 import itertools
+
+variables_dict = {}
+
+instructions_list = []
 
 instructions_dict = {
     "LOAD":     "0000",
@@ -31,10 +36,49 @@ instructions_dict = {
 }
 
 def translateAssembler(program):
-    instructions = []
-    for row in program:
-        instructions.append(translateRow(row))
-    return instructions
+    analyzing_program = False
+    # var parsing
+    for line in program:
+        line = line.strip()
+        if line.startswith("Var"):
+            # parsing variables
+            continue
+        elif line.startswith("Program"):
+            # stop parsing variables
+            analyzing_program = True
+            continue
+        elif line and not analyzing_program:
+            parts = line.split()
+            if len(parts) == 2:
+                variable_name = parts[0]
+                variable_value = int(parts[1])
+                variables_dict[variable_name] = variable_value
+        elif line and analyzing_program: # program
+            parts = line.split()
+            if len(parts) == 2:
+                instruction = parts[0]
+                address = parts[1]
+                
+                address = replaceVariable(address)
+
+                if address == "None":
+                    print(parts[1] + " is not declared")
+                    exit()
+
+                instructions_list.append(instruction + ' ' + str(address))
+            elif len(parts) == 1:
+                instruction = parts[0]
+                instructions_list.append(instruction)
+    compliied_program = []
+    for line in instructions_list:
+        ins = translateRow(line)
+        compliied_program.append(ins)
+    return compliied_program
+
+def replaceVariable(variable):
+    if isinstance(variable, int):
+        return variable
+    return variables_dict.get(variable)
 
 def translateRow(row):
     split = row.split(' ')
@@ -62,6 +106,10 @@ def translateRow(row):
 
 def command_to_bin(instr):
     return instructions_dict.get(instr).replace(' ', '')
+
+def readVariables():
+
+    pass
 
 def compile():
     # Створення файлу
