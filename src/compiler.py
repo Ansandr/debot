@@ -1,10 +1,5 @@
 from numpy import var
 import utils
-import itertools
-
-variables_dict = {}
-
-instructions_list = []
 
 instructions_dict = {
     "LOAD":     "0000",
@@ -35,67 +30,123 @@ instructions_dict = {
     "RCR":      "1111 111",
 }
 
-def translateAssembler(program):
-    analyzing_program = False
-    # var parsing
+def getMarksDict(program):
+    marks_dict = {}
+    i = 0
+    readProgram = False
     for line in program:
-        line = line.strip()
+        line = line.replace('\t', ' ') 
+        parts = line.split(' ')
+
+        if line.startswith("Program"):
+            readProgram = True
+            continue
+
+        if readProgram:
+            if len(parts) == 3:
+                mark = parts[0]
+                marks_dict[mark] = i
+            i = i+1
+        
+    return marks_dict
+
+def getVariablesDict(program):
+    variables_dict = {}
+    readVar = False
+    for line in program:
+        parts = line.split()
+
         if line.startswith("Var"):
-            # parsing variables
+            readVar = True
             continue
-        elif line.startswith("Program"):
-            # stop parsing variables
-            analyzing_program = True
+
+        if line.startswith("Program"):
+            readVar = False
+            break
+        
+        if len(parts) == 2 and readVar:
+            variable_name = parts[0]
+            variable_value = int(parts[1])
+            variables_dict[variable_name] = variable_value
+
+    return variables_dict
+
+def translateAssembler(program):
+
+    variables = getVariablesDict(program)
+    marks = getMarksDict(program)
+
+    dict = variables | marks
+
+    instruction_list = []
+
+    readProgram = False
+    for line in program:
+        if line.startswith("Program"):
+            readProgram = True
             continue
-        elif line and not analyzing_program:
-            parts = line.split()
-            if len(parts) == 2:
-                variable_name = parts[0]
-                variable_value = int(parts[1])
-                variables_dict[variable_name] = variable_value
-        elif line and analyzing_program: # program
-            parts = line.split()
-            if len(parts) == 2:
-                instruction = parts[0]
-                address = parts[1]
-                
-                address = replaceVariable(address)
+        
+        if not readProgram:
+            continue
 
-                if address == "None":
-                    print(parts[1] + " is not declared")
-                    exit()
+        line = line.replace('\t', ' ')
+        parts = line.split(' ')
 
-                instructions_list.append(instruction + ' ' + str(address))
-            elif len(parts) == 1:
-                instruction = parts[0]
-                instructions_list.append(instruction)
+        hasAdress = True
+        if len(parts) == 1:
+            instruction = parts[0]
+            hasAdress = False
+        elif len(parts) == 2:
+            instruction = parts[0]
+            address = parts[1]
+        elif len(parts) == 3:
+            instruction = parts[1]
+            address = parts[2]
+
+        if hasAdress:
+
+            address = replaceVariable(address, dict)
+            
+            if address is None:
+                print(parts[1] + " is not declared")
+                return []
+
+            instruction_list.append(instruction + ' ' + str(address))
+            continue
+
+        instruction_list.append(instruction)
+        pass
+
+    utils.writeFile("instructions.txt", instruction_list)
+
     compliied_program = []
-    for line in instructions_list:
+    for line in instruction_list:
         ins = translateRow(line)
         compliied_program.append(ins)
     return compliied_program
-
-def replaceVariable(variable):
+                
+def replaceVariable(variable, dict):
     if isinstance(variable, int):
         return variable
-    return variables_dict.get(variable)
+    return dict.get(variable)
 
 def translateRow(row):
-    split = row.split(' ')
+    parts = row.split(' ')
     
-    command = split[0]
+    command = parts[0]
     ins_cmd = command_to_bin(command)
+    ins_cmd = ins_cmd.replace(' ', '')
 
     adress = 0
-    if (len(split) == 2):
-        adress = int(split[1])
+    if (len(parts) == 2):
+        adress = int(parts[1])
         ins_adr = str(utils.dec_to_bin(adress))
 
         len_zeros = 16 - len(ins_cmd) - len(ins_adr)
         
         zeros = '0'*len_zeros
         ins = ins_cmd + zeros + ins_adr
-    elif (len(split) == 1):
+    elif (len(parts) == 1):
         len_zeros = 16 - len(ins_cmd)
         
         zeros = '0'*len_zeros
@@ -105,7 +156,7 @@ def translateRow(row):
     return ' '.join([ins[i:i+4] for i in range(0, len(ins), 4)])
 
 def command_to_bin(instr):
-    return instructions_dict.get(instr).replace(' ', '')
+    return instructions_dict.get(instr)
 
 def readVariables():
 
@@ -126,6 +177,7 @@ def compile():
         return
     
     print("Запис машиного коду в файл program.txt")
+    open("program.txt", "w").close()
     utils.writeFile("program.txt", translateAssembler(assembler_program))
 
     print("Компіляція завершена")

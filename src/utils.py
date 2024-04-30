@@ -5,6 +5,7 @@ def create_file(fileName):
         with open(fileName, 'w') as f:
             pass
         print("Файл " + fileName + " створений")
+        f.close()
     except IOError:
         print("Помилка створення файлу " + fileName)
         raise
@@ -20,6 +21,7 @@ def readFile(fileName) -> list:
                     break
                 
                 lines.append(line.strip())
+        f.close()
         return lines
     except IOError:
         print("Помилка при зчитуванні файлу " + fileName)
@@ -32,9 +34,11 @@ def writeFile(fileName, programLines):
             for line in programLines:
                 f.write(line)
                 f.write("\n")
+            f.close()
     except IOError:
         print("Помилка при запису файлу " + fileName)
         raise
+
 
 def dec_to_bin(x):
     return int(bin(x)[2:])
@@ -46,7 +50,7 @@ def dec_to_bin_list():
     lines = []
     for dec in range(0, n):
         num = str(dec_to_bin(dec))
-        zeros = '0'*(16 - len(num))
+        zeros = '0'*(12 - len(num))
         num = zeros + num
         num = ' '.join([num[i:i+4] for i in range(0, len(num), 4)])
         lines.append(num)
